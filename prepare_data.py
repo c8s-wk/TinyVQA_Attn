@@ -42,3 +42,6 @@ def main():
     print(f"Train -> Questions: {len(trainQ)} - Answers: {len(trainA)} - Images: {len(trainI)}")
     print(f"Train -> Questions: {len(valQ)} - Answers: {len(valA)} - Images: {len(valI)}")
     print(f"Train -> Questions: {len(testQ)} - Answers: {len(testA)} - Images: {len(testI)}")
+
+if __name__ == "__main__":
+    main()

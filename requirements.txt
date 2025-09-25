@@ -3,5 +3,5 @@ seaborn==0.12.2
 numpy==1.23.5  
 opencv-python==4.7.0.72  
 tqdm==4.65.0  
-tensorflow==2.12.0  
-scikit-learn==1.2.2 
+tensorflow==2.17.0
+scikit-learn==1.5.1

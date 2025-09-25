@@ -94,7 +94,7 @@ ds = TFDataset(tokenizer, unique_answers, image_h=image_shape[0], image_w=image_
 train_ds = ds.tf_dataset(trainQ, trainA, trainI, batch_size=batch_size)
 valid_ds = ds.tf_dataset(valQ, valA, valI, batch_size=batch_size)
 
-model = build_model(image_shape=image_shape, vocab_size=vocab_size, num_answer=num_answers)
+model = build_model(image_shape=image_shape, vocab_size=vocab_size, num_answers=num_answers)
 model.compile(
     optimizer=Adam(learning_rate=5e-4),
     loss="categorical_crossentropy",

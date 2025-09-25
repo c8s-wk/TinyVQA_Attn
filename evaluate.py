@@ -5,10 +5,12 @@ import numpy as np
 import cv2
 from tqdm import tqdm
 import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow import keras
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 from prepare_data import get_data, get_answer_labels
+
+Tokenizer = keras.preprocessing.text.Tokenizer
 
 """ Seeding """
 tf.random.set_seed(42)
@@ -18,6 +20,11 @@ image_shape = (64, 64)
 model_path = os.path.join("files", "model.h5")
 
 """ Split the data into training and validation """
+dataset_path = "data"
+trainQ, trainA, trainI = get_data(dataset_path, train=True)
+testQ, testA, testI = get_data(dataset_path, train=False)
+unique_answers = get_answer_labels(dataset_path)
+
 trainQ, valQ, trainA, valA, trainI, valI = train_test_split(
     trainQ, trainA, trainI, test_size=0.2, random_state=42
 )
@@ -36,9 +43,9 @@ testQ = tokenizer.texts_to_matrix(testQ)
 model = tf.keras.models.load_model("files/model.h5")
 
 true_values, pred_values = [], []
-for question, answer, image_path in tqfm(zip(testQ, testA, testI), total=len(testQ)):
+for question, answer, image_path in tqdm(zip(testQ, testA, testI), total=len(testQ)):
     """ QUestion """
-    question = np.expand_items(question, axis=0)
+    question = np.expand_dims(question, axis=0)
 
     """ Answer """
     answer = unique_answers.index(answer)
@@ -46,7 +53,7 @@ for question, answer, image_path in tqfm(zip(testQ, testA, testI), total=len(tes
 
     """ Image """
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
-    image = cv2.resize(image, image_shape)
+    image = cv2.resize(image, (image_shape[1], image_shape[0]))
     image = image/255.0
     image = image.astype(np.float32)
     image = np.expand_dims(image, axis=0)
@@ -57,18 +64,18 @@ for question, answer, image_path in tqfm(zip(testQ, testA, testI), total=len(tes
     pred_values.append(pred)
 
 
-    """ Classification Report """
-    report = classification_report(true_values, pred_values, target_names=unique_answers)
-    print(report)
+""" Classification Report """
+report = classification_report(true_values, pred_values, target_names=unique_answers)
+print(report)
 
-    """ Confusion Matrix """
-    cm = confusion_matrix(true_values, pred_values)
+""" Confusion Matrix """
+cm = confusion_matrix(true_values, pred_values)
 
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=unique_answers)
-    plt.title('Confusion Matrix')
-    plt.xlabel('Predicted Labels')
-    plt.ylabel('True Labels')
+plt.figure(figsize=(8, 6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=unique_answers)
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Labels')
+plt.ylabel('True Labels')
 
-    plt.savefig('confusion_matrix_heatmap.png', dpi=300)
-    plt.close()
+plt.savefig('confusion_matrix_heatmap.png', dpi=300)
+plt.close()
